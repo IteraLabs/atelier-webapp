@@ -9,6 +9,14 @@ import OperationsPage from "./operations/page"
 import IntelligencePage from "./intelligence/page"
 import SystemsPage from "./systems/page"
 
+const sectionLabels: Record<string, string> = {
+  overview: "MODEL",
+  agents: "AGENTS",
+  operations: "JOBS",
+  intelligence: "LOGS",
+  systems: "SETTINGS",
+}
+
 export default function TacticalDashboard() {
   const [activeSection, setActiveSection] = useState("overview")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -35,11 +43,11 @@ export default function TacticalDashboard() {
 
           <nav className="space-y-2">
             {[
-              { id: "overview", icon: Monitor, label: "COMMAND CENTER" },
-              { id: "agents", icon: Users, label: "AGENT NETWORK" },
-              { id: "operations", icon: Target, label: "OPERATIONS" },
-              { id: "intelligence", icon: Shield, label: "INTELLIGENCE" },
-              { id: "systems", icon: Settings, label: "SYSTEMS" },
+              { id: "overview", icon: Monitor, label: "MODEL" },
+              { id: "agents", icon: Users, label: "AGENTS" },
+              { id: "operations", icon: Target, label: "JOBS" },
+              { id: "intelligence", icon: Shield, label: "LOGS" },
+              { id: "systems", icon: Settings, label: "SETTINGS" },
             ].map((item) => (
               <button
                 key={item.id}
@@ -55,19 +63,7 @@ export default function TacticalDashboard() {
             ))}
           </nav>
 
-          {!sidebarCollapsed && (
-            <div className="mt-8 p-4 bg-neutral-800 border border-neutral-700 rounded">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                <span className="text-xs text-white">SYSTEM ONLINE</span>
-              </div>
-              <div className="text-xs text-neutral-500">
-                <div>UPTIME: 72:14:33</div>
-                <div>AGENTS: 847 ACTIVE</div>
-                <div>MISSIONS: 23 ONGOING</div>
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
 
@@ -81,12 +77,13 @@ export default function TacticalDashboard() {
         {/* Top Toolbar */}
         <div className="h-16 bg-neutral-800 border-b border-neutral-700 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
-            <div className="text-sm text-neutral-400">
-              TACTICAL COMMAND / <span className="text-orange-500">OVERVIEW</span>
-            </div>
+            <nav aria-label="Breadcrumb" className="text-sm text-neutral-400">
+              <span>ATELIER</span>
+              <span className="mx-2 text-neutral-600">/</span>
+              <span className="text-orange-500 font-medium">{sectionLabels[activeSection] ?? "MODEL"}</span>
+            </nav>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-xs text-neutral-500">LAST UPDATE: 05/06/2025 20:00 UTC</div>
             <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-orange-500">
               <Bell className="w-4 h-4" />
             </Button>
