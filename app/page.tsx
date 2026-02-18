@@ -22,7 +22,7 @@ export default function TacticalDashboard() {
         <div className="p-4">
           <div className="flex items-center justify-between mb-8">
             <div className={`${sidebarCollapsed ? "hidden" : "block"}`}>
-              <h1 className="text-orange-500 font-bold text-lg tracking-wider">TACTICAL OPS</h1>
+              <h1 className="text-orange-500 font-bold text-lg tracking-wider">Atelier</h1>
               <p className="text-neutral-500 text-xs">v2.1.7 CLASSIFIED</p>
             </div>
             <Button
@@ -48,11 +48,10 @@ export default function TacticalDashboard() {
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded transition-colors ${
-                  activeSection === item.id
+                className={`w-full flex items-center gap-3 p-3 rounded transition-colors ${activeSection === item.id
                     ? "bg-orange-500 text-white"
                     : "text-neutral-400 hover:text-white hover:bg-neutral-800"
-                }`}
+                  }`}
               >
                 <item.icon className="w-5 h-5 md:w-5 md:h-5 sm:w-6 sm:h-6" />
                 {!sidebarCollapsed && <span className="text-sm font-medium">{item.label}</span>}
