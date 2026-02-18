@@ -1,16 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronRight, Monitor, Settings, Shield, Target, Users, Bell, RefreshCw } from "lucide-react"
+import { ChevronRight, Monitor, Settings, Shield, Target, Users, Bell, RefreshCw, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import CommandCenterPage from "./command-center/page"
 import AgentNetworkPage from "./agent-network/page"
 import OperationsPage from "./operations/page"
 import IntelligencePage from "./intelligence/page"
 import SystemsPage from "./systems/page"
+import ModelPage from "./model/page"
 
 const sectionLabels: Record<string, string> = {
-  overview: "MODEL",
+  overview: "MARKETS",
+  model: "MODEL",
   agents: "AGENTS",
   operations: "JOBS",
   intelligence: "LOGS",
@@ -43,7 +45,8 @@ export default function TacticalDashboard() {
 
           <nav className="space-y-2">
             {[
-              { id: "overview", icon: Monitor, label: "MODEL" },
+              { id: "overview", icon: Monitor, label: "MARKETS" },
+              { id: "model", icon: BarChart3, label: "MODEL" },
               { id: "agents", icon: Users, label: "AGENTS" },
               { id: "operations", icon: Target, label: "JOBS" },
               { id: "intelligence", icon: Shield, label: "LOGS" },
@@ -80,7 +83,7 @@ export default function TacticalDashboard() {
             <nav aria-label="Breadcrumb" className="text-sm text-neutral-400">
               <span>ATELIER</span>
               <span className="mx-2 text-neutral-600">/</span>
-              <span className="text-orange-500 font-medium">{sectionLabels[activeSection] ?? "MODEL"}</span>
+              <span className="text-orange-500 font-medium">{sectionLabels[activeSection] ?? "MARKETS"}</span>
             </nav>
           </div>
           <div className="flex items-center gap-4">
@@ -96,6 +99,7 @@ export default function TacticalDashboard() {
         {/* Dashboard Content */}
         <div className="flex-1 overflow-auto">
           {activeSection === "overview" && <CommandCenterPage />}
+          {activeSection === "model" && <ModelPage />}
           {activeSection === "agents" && <AgentNetworkPage />}
           {activeSection === "operations" && <OperationsPage />}
           {activeSection === "intelligence" && <IntelligencePage />}
