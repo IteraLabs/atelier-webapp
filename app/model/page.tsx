@@ -65,26 +65,26 @@ const branchingMatrix = [
 
 // Forecast vs Actual comparison (from pipeline Section 9)
 const forecastVsActual = [
-  { i: 1,  actualDt: 1.0,    forecastDt: 1211.28,  diff: -1210.28 },
-  { i: 2,  actualDt: 4.0,    forecastDt: 1480.61,  diff: -1476.61 },
-  { i: 3,  actualDt: 5.0,    forecastDt: 1619.54,  diff: -1614.54 },
-  { i: 4,  actualDt: 6.0,    forecastDt: 1722.20,  diff: -1716.20 },
-  { i: 5,  actualDt: 7.0,    forecastDt: 2424.84,  diff: -2417.84 },
-  { i: 6,  actualDt: 8.0,    forecastDt: 2934.18,  diff: -2926.18 },
-  { i: 7,  actualDt: 9.0,    forecastDt: 4271.47,  diff: -4262.47 },
-  { i: 8,  actualDt: 11.0,   forecastDt: 4709.46,  diff: -4698.46 },
-  { i: 9,  actualDt: 12.0,   forecastDt: 5012.15,  diff: -5000.15 },
-  { i: 10, actualDt: 21.0,   forecastDt: 5215.13,  diff: -5194.13 },
-  { i: 11, actualDt: 22.0,   forecastDt: 5280.02,  diff: -5258.02 },
-  { i: 12, actualDt: 54.0,   forecastDt: 5558.15,  diff: -5504.15 },
-  { i: 13, actualDt: 62.0,   forecastDt: 6319.73,  diff: -6257.73 },
-  { i: 14, actualDt: 150.0,  forecastDt: 7069.78,  diff: -6919.78 },
-  { i: 15, actualDt: 214.0,  forecastDt: 8344.19,  diff: -8130.19 },
-  { i: 16, actualDt: 220.0,  forecastDt: 8619.67,  diff: -8399.67 },
-  { i: 17, actualDt: 221.0,  forecastDt: 8732.21,  diff: -8511.21 },
-  { i: 18, actualDt: 223.0,  forecastDt: 9414.92,  diff: -9191.92 },
-  { i: 19, actualDt: 399.0,  forecastDt: 9433.92,  diff: -9034.92 },
-  { i: 20, actualDt: 2145.0, forecastDt: 9724.63,  diff: -7579.63 },
+  { i: 1, actualDt: 1.0, forecastDt: 1211.28, diff: -1210.28 },
+  { i: 2, actualDt: 4.0, forecastDt: 1480.61, diff: -1476.61 },
+  { i: 3, actualDt: 5.0, forecastDt: 1619.54, diff: -1614.54 },
+  { i: 4, actualDt: 6.0, forecastDt: 1722.20, diff: -1716.20 },
+  { i: 5, actualDt: 7.0, forecastDt: 2424.84, diff: -2417.84 },
+  { i: 6, actualDt: 8.0, forecastDt: 2934.18, diff: -2926.18 },
+  { i: 7, actualDt: 9.0, forecastDt: 4271.47, diff: -4262.47 },
+  { i: 8, actualDt: 11.0, forecastDt: 4709.46, diff: -4698.46 },
+  { i: 9, actualDt: 12.0, forecastDt: 5012.15, diff: -5000.15 },
+  { i: 10, actualDt: 21.0, forecastDt: 5215.13, diff: -5194.13 },
+  { i: 11, actualDt: 22.0, forecastDt: 5280.02, diff: -5258.02 },
+  { i: 12, actualDt: 54.0, forecastDt: 5558.15, diff: -5504.15 },
+  { i: 13, actualDt: 62.0, forecastDt: 6319.73, diff: -6257.73 },
+  { i: 14, actualDt: 150.0, forecastDt: 7069.78, diff: -6919.78 },
+  { i: 15, actualDt: 214.0, forecastDt: 8344.19, diff: -8130.19 },
+  { i: 16, actualDt: 220.0, forecastDt: 8619.67, diff: -8399.67 },
+  { i: 17, actualDt: 221.0, forecastDt: 8732.21, diff: -8511.21 },
+  { i: 18, actualDt: 223.0, forecastDt: 9414.92, diff: -9191.92 },
+  { i: 19, actualDt: 399.0, forecastDt: 9433.92, diff: -9034.92 },
+  { i: 20, actualDt: 2145.0, forecastDt: 9724.63, diff: -7579.63 },
 ]
 
 // Diagnostics from pipeline
@@ -639,28 +639,226 @@ export default function ModelPage() {
         {/* ---- INTENSITY TAB ---- */}
         <TabsContent value="intensity">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            {/* Conditional Intensity Function — Hawkes λ(t) */}
             <Card className="lg:col-span-8 bg-neutral-900 border-neutral-700">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">CONDITIONAL INTENSITY FUNCTION</CardTitle>
+                  <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
+                    CONDITIONAL INTENSITY FUNCTION
+                  </CardTitle>
                   <div className="flex gap-2">
-                    <Badge className="bg-orange-500/20 text-orange-400">Live</Badge>
-                    <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-orange-500 h-7 w-7"><Download className="w-3.5 h-3.5" /></Button>
+                    <span className="text-[10px] tracking-wider text-orange-500 bg-orange-500/10 border border-orange-500/25 px-2.5 py-0.5 rounded">
+                      LIVE
+                    </span>
+                    <span className="text-[10px] tracking-wider text-neutral-400 bg-neutral-400/10 border border-neutral-400/20 px-2.5 py-0.5 rounded">
+                      λ(t)
+                    </span>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="h-36 relative"><StepChart data={intensityTimeSeries} /></div>
-                <div className="flex justify-between text-xs text-neutral-500 mt-2 font-mono">
-                  <span>t=0</span><span>t=20</span><span>t=40</span>
-                </div>
-                <div className="flex items-center gap-4 mt-3 text-xs text-neutral-400">
-                  <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-orange-500 inline-block" /> Intensity</span>
-                  <span>Peak: <span className="text-white font-mono">2.31</span></span>
-                  <span>Mean: <span className="text-white font-mono">1.02</span></span>
-                </div>
+                {(() => {
+                  // ── DATA VARIABLES ─────────────────────────────────
+                  // Replace these with your live data source.
+                  // Everything below reads ONLY from these variables.
+
+                  // Fine grid: smooth continuous curve
+                  const tGrid = Array.from({ length: 801 }, (_, i) => i * 0.05)
+                  const lambdaGrid = tGrid.map(t => {
+                    // Placeholder: synthetic Hawkes intensity
+                    const events = [1.2, 2.1, 4.5, 4.8, 5.2, 9.3, 10.1, 10.5, 10.8, 11.2, 11.5, 16.4, 17.1, 20.2, 20.5, 20.8, 21.1, 21.4, 21.8, 22.3, 27.5, 28.1, 28.4, 31.2, 31.5, 31.8, 32.3, 36.8, 37.2, 38.5, 39.1, 39.3, 39.5, 39.7, 39.9]
+                    let lam = 0.3
+                    for (const ti of events) { if (ti < t) lam += 0.8 * Math.exp(-1.2 * (t - ti)) }
+                    return lam
+                  })
+
+                  // Integer-period samples for data point markers
+                  const sampleEvents = [1.2, 2.1, 4.5, 4.8, 5.2, 9.3, 10.1, 10.5, 10.8, 11.2, 11.5, 16.4, 17.1, 20.2, 20.5, 20.8, 21.1, 21.4, 21.8, 22.3, 27.5, 28.1, 28.4, 31.2, 31.5, 31.8, 32.3, 36.8, 37.2, 38.5, 39.1, 39.3, 39.5, 39.7, 39.9]
+                  const T_MAX = 40
+                  const intT = Array.from({ length: T_MAX }, (_, i) => i)
+                  const intLambda = intT.map(t => {
+                    const mid = t + 0.5
+                    let lam = 0.3
+                    for (const ti of sampleEvents) { if (ti < mid) lam += 0.8 * Math.exp(-1.2 * (mid - ti)) }
+                    return lam
+                  })
+                  const intEvents = intT.map(t =>
+                    sampleEvents.filter(e => e >= t && e < t + 1).length
+                  )
+
+                  // Heatstrip (high-res sampling)
+                  const heatRes = 400
+                  const heatT = Array.from({ length: heatRes }, (_, i) => (i / heatRes) * T_MAX)
+                  const heatLambda = heatT.map(t => {
+                    let lam = 0.3
+                    for (const ti of sampleEvents) { if (ti < t) lam += 0.8 * Math.exp(-1.2 * (t - ti)) }
+                    return lam
+                  })
+
+                  // Kernel traces (first 20 events)
+                  const kernelData = sampleEvents.slice(0, 20).map(ti => ({
+                    x: tGrid,
+                    y: tGrid.map(t => t < ti ? null : 0.8 * Math.exp(-1.2 * (t - ti))),
+                    type: "scatter" as const,
+                    mode: "lines" as const,
+                    line: { color: "rgba(249, 115, 22, 0.22)", width: 1.0 },
+                    connectgaps: false,
+                    showlegend: false,
+                    hoverinfo: "skip" as const,
+                    xaxis: "x",
+                    yaxis: "y",
+                  }))
+
+                  // ── COMPUTED STATS ─────────────────────────────────
+                  const peak = Math.max(...lambdaGrid)
+                  const mean = lambdaGrid.reduce((a, b) => a + b, 0) / lambdaGrid.length
+                  const totalEvents = intEvents.reduce((a, b) => a + b, 0)
+
+                  // ── THEME ──────────────────────────────────────────
+                  const orange = "#f97316"
+                  const font = { family: "monospace", color: "#737373", size: 11 }
+                  const gridColor = "rgba(64, 64, 64, 0.25)"
+
+                  // ── TRACES ─────────────────────────────────────────
+                  const traces: any[] = [
+                    // Heatstrip (top panel)
+                    {
+                      x: heatT,
+                      y: [""],
+                      z: [heatLambda],
+                      type: "heatmap",
+                      colorscale: [
+                        [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
+                        [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
+                        [0.85, "#fb923c"], [1.0, "#fdba74"],
+                      ],
+                      showscale: false,
+                      hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
+                      xaxis: "x",
+                      yaxis: "y2",
+                    },
+                    // Kernel traces
+                    ...kernelData,
+                    // Smooth λ(t) curve
+                    {
+                      x: tGrid,
+                      y: lambdaGrid,
+                      type: "scatter",
+                      mode: "lines",
+                      fill: "tozeroy",
+                      fillcolor: "rgba(249, 115, 22, 0.06)",
+                      line: { color: orange, width: 2 },
+                      name: "λ(t)",
+                      hoverinfo: "skip",
+                      xaxis: "x",
+                      yaxis: "y",
+                    },
+                    // Data point markers at integer t
+                    {
+                      x: intT,
+                      y: intLambda,
+                      customdata: intT.map((_, i) => [intEvents[i]]),
+                      type: "scatter",
+                      mode: "markers",
+                      marker: {
+                        size: 5,
+                        color: orange,
+                        symbol: "circle",
+                        line: { width: 1, color: "#171717" },
+                      },
+                      name: "Samples",
+                      hovertemplate:
+                        "<b>t</b> = %{x}" +
+                        "<br><b>λ</b> = %{y:.3f}" +
+                        "<br><b>events</b> = %{customdata[0]}" +
+                        "<extra></extra>",
+                      xaxis: "x",
+                      yaxis: "y",
+                    },
+                  ]
+
+                  const tickVals = Array.from({ length: 9 }, (_, i) => i * 5)
+
+                  return (
+                    <>
+                      <PlotlyChart
+                        data={traces}
+                        layout={{
+                          autosize: true,
+                          height: 320,
+                          paper_bgcolor: "transparent",
+                          plot_bgcolor: "transparent",
+                          font: font,
+                          showlegend: false,
+                          hovermode: "closest",
+                          hoverlabel: {
+                            bgcolor: "#1a1a1a",
+                            bordercolor: orange,
+                            font: { color: "#e5e5e5", family: "monospace", size: 11 },
+                          },
+                          margin: { l: 45, r: 20, t: 8, b: 35 },
+                          xaxis: {
+                            showgrid: true,
+                            gridcolor: gridColor,
+                            gridwidth: 1,
+                            zeroline: false,
+                            range: [0, T_MAX],
+                            tickfont: font,
+                            tickvals: tickVals,
+                            ticktext: tickVals.map(v => `t=${v}`),
+                            domain: [0, 1],
+                            anchor: "y",
+                          },
+                          yaxis: {
+                            showgrid: true,
+                            gridcolor: gridColor,
+                            gridwidth: 1,
+                            zeroline: false,
+                            range: [0, peak * 1.15],
+                            tickfont: font,
+                            title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
+                            domain: [0, 0.72],
+                          },
+                          yaxis2: {
+                            domain: [0.80, 1.0],
+                            showgrid: false,
+                            showticklabels: false,
+                            zeroline: false,
+                            fixedrange: true,
+                          },
+                          annotations: [
+                            {
+                              x: 0.005, y: 0.78, xref: "paper", yref: "paper",
+                              text: [
+                                `<span style="color:${orange}"><b>━</b></span> λ(t)`,
+                                `<span style="color:rgba(249,115,22,0.35)"><b>━</b></span> kernels`,
+                                `<span style="color:${orange}"><b>●</b></span> t, λ, events`,
+                                `<b>▓</b> intensity`,
+                              ].join("    "),
+                              showarrow: false,
+                              font: { family: "monospace", size: 10, color: "#525252" },
+                              xanchor: "left",
+                            },
+                          ],
+                        }}
+                        config={{ displayModeBar: false, responsive: true }}
+                        style={{ width: "100%", height: "320px" }}
+                      />
+                      <div className="flex gap-6 mt-2 text-[10px] tracking-wider text-neutral-600 font-mono">
+                        <span>μ = <span className="text-neutral-500">0.3</span></span>
+                        <span>α = <span className="text-neutral-500">0.8</span></span>
+                        <span>β = <span className="text-neutral-500">1.2</span></span>
+                        <span>Peak: <span className="text-neutral-500">{peak.toFixed(2)}</span></span>
+                        <span>Mean: <span className="text-neutral-500">{mean.toFixed(2)}</span></span>
+                        <span>Events: <span className="text-neutral-500">{totalEvents}</span></span>
+                      </div>
+                    </>
+                  )
+                })()}
               </CardContent>
             </Card>
+
             <Card className="lg:col-span-4 bg-neutral-900 border-neutral-700">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">INTERARRIVAL STATISTICS</CardTitle>
@@ -693,6 +891,7 @@ export default function ModelPage() {
                 </div>
               </CardContent>
             </Card>
+
           </div>
         </TabsContent>
 
