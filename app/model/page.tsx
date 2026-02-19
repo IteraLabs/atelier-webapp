@@ -471,6 +471,7 @@ export default function ModelPage() {
         <TabsList className="bg-neutral-800 border border-neutral-700">
           <TabsTrigger value="parameters" className="text-neutral-400 data-[state=active]:bg-orange-500 data-[state=active]:text-white">Parameters</TabsTrigger>
           <TabsTrigger value="intensity" className="text-neutral-400 data-[state=active]:bg-orange-500 data-[state=active]:text-white">Intensity</TabsTrigger>
+          <TabsTrigger value="heatmap" className="text-neutral-400 data-[state=active]:bg-orange-500 data-[state=active]:text-white">Heatmap</TabsTrigger>
           <TabsTrigger value="forecast" className="text-neutral-400 data-[state=active]:bg-orange-500 data-[state=active]:text-white relative">
             Forecast
             {forecastFailed && <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-red-500 text-white rounded-full">!</span>}
