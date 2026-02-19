@@ -753,7 +753,7 @@ export default function ModelPage() {
                             x: heatT,
                             y: [heatLambda],
                             type: "heatmap",
-                            showscale: true,
+                            showscale: false,
                             xaxis: "x",
                             yaxis: "y2",
                           },
