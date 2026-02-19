@@ -722,14 +722,12 @@ export default function ModelPage() {
                     }
                   })
 
-                  // ── DERIVED: heatstrip ───────────────────────────
+                  // Heatstrip (high-res sampling)
                   const heatRes = 400
                   const heatT = Array.from({ length: heatRes }, (_, i) => (i / heatRes) * T_MAX)
                   const heatLambda = heatT.map(t => {
-                    let lam = MU
-                    for (const ti of sampleEvents) {
-                      if (ti < t) lam += ALPHA * Math.exp(-BETA * (t - ti))
-                    }
+                    let lam = 0.3
+                    for (const ti of sampleEvents) { if (ti < t) lam += 0.8 * Math.exp(-1.2 * (t - ti)) }
                     return lam
                   })
 
@@ -753,7 +751,7 @@ export default function ModelPage() {
 
                           {
                             x: heatT,
-                            y: [lambdaGrid],
+                            y: [""],
                             z: [heatLambda],
                             type: "heatmap",
                             colorscale: [
