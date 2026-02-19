@@ -639,7 +639,7 @@ export default function ModelPage() {
 
         {/* ---- INTENSITY TAB ---- */}
         <TabsContent value="intensity">
-          <div className="grid grid-cols-2 lg:grid-cols-12 gap-1">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
             {/* Conditional Intensity Function — Hawkes λ(t) */}
             <CardContent>
