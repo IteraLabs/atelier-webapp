@@ -751,6 +751,22 @@ export default function ModelPage() {
                       <PlotlyChart
                         data={[
 
+                          {
+                            x: heatT,
+                            y: [""],
+                            z: [heatLambda],
+                            type: "heatmap",
+                            colorscale: [
+                              [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
+                              [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
+                              [0.85, "#fb923c"], [1.0, "#fdba74"],
+                            ],
+                            showscale: false,
+                            hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
+                            xaxis: "x",
+                            yaxis: "y2",
+                          },
+
                           ...kernelTraces,
                           {
                             x: tGrid,
