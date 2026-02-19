@@ -738,6 +738,7 @@ export default function ModelPage() {
                       hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
                       xaxis: "x",
                       yaxis: "y2",
+                      zsmooth: "best",
                     },
                     // Kernel traces
                     ...kernelData,
