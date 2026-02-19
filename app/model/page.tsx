@@ -828,11 +828,12 @@ export default function ModelPage() {
 
                           // ── HEATSTRIP PANEL (top 20%) ──
                           yaxis2: {
-                            domain: [0.80, 1.0],
-                            showgrid: false,
-                            showticklabels: false,
-                            zeroline: false,
+                            showgrid: true,
+                            showticklabels: true,
+                            zeroline: true,
                             fixedrange: true,
+                            title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
+
                           },
 
                           // ── MAIN PANEL (bottom 72%) ──
