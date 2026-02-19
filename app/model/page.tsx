@@ -751,7 +751,7 @@ export default function ModelPage() {
 
                           {
                             x: tGrid,
-                            y: [""],
+                            y: ["lambda"],
                             z: [heatLambda],
                             type: "heatmap",
                             colorscale: [
