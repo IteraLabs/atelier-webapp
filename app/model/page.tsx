@@ -826,6 +826,15 @@ export default function ModelPage() {
                             anchor: "y",
                           },
 
+                          // ── HEATSTRIP PANEL (top 20%) ──
+                          yaxis2: {
+                            domain: [0.80, 1.0],
+                            showgrid: false,
+                            showticklabels: false,
+                            zeroline: false,
+                            fixedrange: true,
+                          },
+
                           // ── MAIN PANEL (bottom 72%) ──
                           yaxis: {
                             showgrid: true,
@@ -836,15 +845,6 @@ export default function ModelPage() {
                             tickfont: font,
                             title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
                             domain: [0, 0.72],
-                          },
-
-                          // ── HEATSTRIP PANEL (top 20%) ──
-                          yaxis2: {
-                            domain: [0.80, 1.0],
-                            showgrid: false,
-                            showticklabels: false,
-                            zeroline: false,
-                            fixedrange: true,
                           },
 
                           annotations: [{
