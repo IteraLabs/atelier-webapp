@@ -779,6 +779,7 @@ export default function ModelPage() {
                         style={{ width: "100%", height: "36px" }}
                       />
 
+
                       {/* ── MAIN CHART ── */}
                       <PlotlyChart
                         data={[
