@@ -755,7 +755,7 @@ export default function ModelPage() {
                             type: "scatter",
                             showscale: true,
                             xaxis: "x",
-                            yaxis: "y",
+                            yaxis: "y2",
                           },
                           // ── TRACES 2..N: Kernel decays (on yaxis y) ──
                           ...kernelTraces,
