@@ -830,10 +830,8 @@ export default function ModelPage() {
                           yaxis2: {
                             showgrid: true,
                             showticklabels: true,
-                            zeroline: true,
-                            fixedrange: true,
-                            title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
-
+                            zeroline: false,
+                            title: { text: "top", font: { ...font, size: 10, color: "#525252" } },
                           },
 
                           // ── MAIN PANEL (bottom 72%) ──
