@@ -726,7 +726,7 @@ export default function ModelPage() {
                     // Heatstrip (top panel)
                     {
                       x: heatT,
-                      y: [""],
+                      y: ["λ"],
                       z: [heatLambda],
                       type: "heatmap",
                       colorscale: [
@@ -738,6 +738,7 @@ export default function ModelPage() {
                       hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
                       xaxis: "x",
                       yaxis: "y2",
+                      zsmooth: "best",
                     },
                     // Kernel traces
                     ...kernelData,
