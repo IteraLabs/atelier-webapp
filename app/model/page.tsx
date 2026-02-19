@@ -695,9 +695,7 @@ export default function ModelPage() {
                     eventPeriodCounts.push(sampleEvents.filter(e => Math.floor(e) === period).length)
                   }
 
-                  // ── DERIVED: kernel traces (pure individual decay) ──
-                  // Each kernel shows ONLY α·exp(-β(t-tᵢ)) from y=0
-                  // This is each event's isolated contribution to λ(t)
+                  // ── DERIVED: kernel traces ────────────────────────
                   const kernelTraces = sampleEvents.map((ti) => {
                     const xs: number[] = []
                     const ys: (number | null)[] = []
@@ -715,19 +713,23 @@ export default function ModelPage() {
                       y: ys,
                       type: "scatter" as const,
                       mode: "lines" as const,
-                      line: { color: "rgba(249, 115, 22, 0.20)", width: 0.8 },
+                      line: { color: "rgba(249, 115, 22, 0.22)", width: 1.0 },
                       connectgaps: false,
                       showlegend: false,
                       hoverinfo: "skip" as const,
+                      xaxis: "x",
+                      yaxis: "y",
                     }
                   })
 
-                  // Heatstrip (high-res sampling)
+                  // ── DERIVED: heatstrip data ───────────────────────
                   const heatRes = 400
                   const heatT = Array.from({ length: heatRes }, (_, i) => (i / heatRes) * T_MAX)
                   const heatLambda = heatT.map(t => {
-                    let lam = 0.3
-                    for (const ti of sampleEvents) { if (ti < t) lam += 0.8 * Math.exp(-1.2 * (t - ti)) }
+                    let lam = MU
+                    for (const ti of sampleEvents) {
+                      if (ti < t) lam += ALPHA * Math.exp(-BETA * (t - ti))
+                    }
                     return lam
                   })
 
@@ -740,18 +742,16 @@ export default function ModelPage() {
                   const orange = "#f97316"
                   const font = { family: "monospace", color: "#737373", size: 11 }
                   const gridColor = "rgba(64, 64, 64, 0.25)"
-                  const tickVals = Array.from({ length: 9 }, (_, i) => i * 5)
+                  const tickVals = Array.from({ length: 7 }, (_, i) => i * 5)
 
                   return (
                     <>
-
-                      {/* ── MAIN CHART ── */}
                       <PlotlyChart
                         data={[
-
+                          // ── TRACE 1: Heatstrip (top panel, on yaxis2) ──
                           {
-                            x: tGrid,
-                            y: ["lambda"],
+                            x: heatT,
+                            y: [""],
                             z: [heatLambda],
                             type: "heatmap",
                             colorscale: [
@@ -764,9 +764,9 @@ export default function ModelPage() {
                             xaxis: "x",
                             yaxis: "y2",
                           },
-
+                          // ── TRACES 2..N: Kernel decays (on yaxis y) ──
                           ...kernelTraces,
-
+                          // ── TRACE: Smooth λ(t) curve (on yaxis y) ──
                           {
                             x: tGrid,
                             y: lambdaGrid,
@@ -777,7 +777,10 @@ export default function ModelPage() {
                             line: { color: orange, width: 2 },
                             name: "λ(t)",
                             hoverinfo: "skip" as const,
+                            xaxis: "x",
+                            yaxis: "y",
                           },
+                          // ── TRACE: Event scatter points (on yaxis y) ──
                           {
                             x: eventX,
                             y: eventY,
@@ -785,10 +788,10 @@ export default function ModelPage() {
                             type: "scatter" as const,
                             mode: "markers" as const,
                             marker: {
-                              size: 6,
+                              size: 5,
                               color: orange,
                               symbol: "circle",
-                              line: { width: 1.5, color: "#171717" },
+                              line: { width: 1, color: "#171717" },
                             },
                             name: "Events",
                             hovertemplate:
@@ -796,35 +799,69 @@ export default function ModelPage() {
                               "<br><b>λ</b> = %{y:.3f}" +
                               "<br><b>events in period</b> = %{customdata[0]}" +
                               "<extra></extra>",
+                            xaxis: "x",
+                            yaxis: "y",
                           },
                         ]}
                         layout={{
                           autosize: true,
-                          height: 260,
+                          height: 340,
                           paper_bgcolor: "transparent",
                           plot_bgcolor: "transparent",
                           font: font,
                           showlegend: false,
                           hovermode: "closest" as const,
-                          hoverlabel: { bgcolor: "#1a1a1a", bordercolor: orange, font: { color: "#e5e5e5", family: "monospace", size: 11 } },
-                          margin: { l: 45, r: 20, t: 5, b: 35 },
+                          hoverlabel: {
+                            bgcolor: "#1a1a1a",
+                            bordercolor: orange,
+                            font: { color: "#e5e5e5", family: "monospace", size: 11 },
+                          },
+                          margin: { l: 45, r: 20, t: 8, b: 35 },
+
+                          // ── SHARED X-AXIS ──
                           xaxis: {
-                            showgrid: true, gridcolor: gridColor, gridwidth: 1, zeroline: false,
-                            range: [0, T_MAX], tickfont: font,
+                            showgrid: true,
+                            gridcolor: gridColor,
+                            gridwidth: 1,
+                            zeroline: false,
+                            range: [0, T_MAX],
+                            tickfont: font,
                             tickvals: tickVals,
                             ticktext: tickVals.map((v: number) => `t=${v}`),
+                            domain: [0, 1],
+                            anchor: "y",
                           },
+
+                          // ── MAIN PANEL (bottom 72%) ──
                           yaxis: {
-                            showgrid: true, gridcolor: gridColor, gridwidth: 1, zeroline: false,
-                            range: [0, peak * 1.15], tickfont: font,
+                            showgrid: true,
+                            gridcolor: gridColor,
+                            gridwidth: 1,
+                            zeroline: false,
+                            range: [0, peak * 1.15],
+                            tickfont: font,
                             title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
+                            domain: [0, 0.72],
                           },
+
+                          // ── HEATSTRIP PANEL (top 20%) ──
+                          yaxis2: {
+                            domain: [0.80, 1.0],
+                            showgrid: false,
+                            showticklabels: false,
+                            zeroline: false,
+                            fixedrange: true,
+                          },
+
                           annotations: [{
-                            x: 0.005, y: 1.02, xref: "paper", yref: "paper",
+                            x: 0.005,
+                            y: 0.78,
+                            xref: "paper",
+                            yref: "paper",
                             text: [
                               `<span style="color:${orange}"><b>━</b></span> λ(t)`,
                               `<span style="color:rgba(249,115,22,0.35)"><b>━</b></span> kernels`,
-                              `<span style="color:${orange}"><b>●</b></span> events`,
+                              `<span style="color:${orange}"><b>●</b></span> t, λ, events`,
                               `<b>▓</b> intensity`,
                             ].join("    "),
                             showarrow: false,
@@ -833,7 +870,7 @@ export default function ModelPage() {
                           }],
                         }}
                         config={{ displayModeBar: false, responsive: true }}
-                        style={{ width: "100%", height: "260px" }}
+                        style={{ width: "100%", height: "340px" }}
                       />
 
                       <div className="flex gap-6 mt-2 text-[10px] tracking-wider text-neutral-600 font-mono">
@@ -885,6 +922,7 @@ export default function ModelPage() {
 
           </div>
         </TabsContent>
+
 
         {/* ---- FORECAST TAB ---- */}
         <TabsContent value="forecast">
