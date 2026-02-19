@@ -749,9 +749,8 @@ export default function ModelPage() {
                       {/* ── HEATSTRIP ── */}
                       <PlotlyChart
                         data={[{
-                          z: [heatLambda, heatLambda, heatLambda],
+                          z: [heatLambda],
                           x: heatT,
-                          y: [0, 1, 2],
                           type: "heatmap" as const,
                           colorscale: [
                             [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
@@ -771,7 +770,7 @@ export default function ModelPage() {
                           showlegend: false,
                           margin: { l: 45, r: 20, t: 0, b: 0 },
                           xaxis: { showgrid: false, showticklabels: false, zeroline: false, range: [0, T_MAX] },
-                          yaxis: { showgrid: false, showticklabels: false, zeroline: false, range: [-0.5, 2.5] },
+                          yaxis: { showgrid: false, showticklabels: false, zeroline: false },
                           hovermode: "closest" as const,
                           hoverlabel: { bgcolor: "#1a1a1a", bordercolor: orange, font: { color: "#e5e5e5", family: "monospace", size: 11 } },
                         }}
