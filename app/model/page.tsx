@@ -661,50 +661,94 @@ export default function ModelPage() {
               <CardContent>
                 {(() => {
                   // ── DATA VARIABLES ─────────────────────────────────
+                  // Replace sampleEvents with your live event arrival times
                   const sampleEvents = [1.2, 2.1, 4.5, 4.8, 5.2, 9.3, 10.1, 10.5, 10.8, 11.2, 11.5, 16.4, 17.1, 20.2, 20.5, 20.8, 21.1, 21.4, 21.8, 22.3, 27.5, 28.1, 28.4, 31.2, 31.5, 31.8, 32.3, 36.8, 37.2, 38.5, 39.1, 39.3, 39.5, 39.7, 39.9]
+                  const MU = 0.3
+                  const ALPHA = 0.8
+                  const BETA = 1.2
                   const T_MAX = 40
 
-                  const tGrid = Array.from({ length: 801 }, (_, i) => i * 0.05)
-                  const lambdaGrid = tGrid.map(t => {
-                    let lam = 0.3
-                    for (const ti of sampleEvents) { if (ti < t) lam += 0.8 * Math.exp(-1.2 * (t - ti)) }
-                    return lam
+                  // ── DERIVED: λ(t) on fine grid ───────────────────
+                  const tGrid: number[] = []
+                  const lambdaGrid: number[] = []
+                  for (let t = 0; t <= T_MAX; t += 0.05) {
+                    tGrid.push(Math.round(t * 100) / 100)
+                    let lam = MU
+                    for (const ti of sampleEvents) {
+                      if (ti < t) lam += ALPHA * Math.exp(-BETA * (t - ti))
+                    }
+                    lambdaGrid.push(lam)
+                  }
+
+                  // ── DERIVED: event jump points ───────────────────
+                  // Each scatter point is at (tᵢ, λ(tᵢ⁺)) — the post-jump intensity
+                  const eventX: number[] = []
+                  const eventY: number[] = []
+                  const eventCounts: number[] = []
+                  for (let i = 0; i < sampleEvents.length; i++) {
+                    const ti = sampleEvents[i]
+                    // λ just after this event arrives (includes this event's α contribution)
+                    let lam = MU
+                    for (let j = 0; j <= i; j++) {
+                      lam += ALPHA * Math.exp(-BETA * (ti - sampleEvents[j]))
+                    }
+                    eventX.push(ti)
+                    eventY.push(lam)
+                    // Count how many events share this integer period
+                    const period = Math.floor(ti)
+                    const count = sampleEvents.filter(e => Math.floor(e) === period).length
+                    eventCounts.push(count)
+                  }
+
+                  // ── DERIVED: kernel traces anchored to the curve ─
+                  // Each kernel starts at (tᵢ, λ_before) and shows the 
+                  // individual α·exp(-β(t-tᵢ)) decay ADDED to the 
+                  // pre-jump λ value, so it visually sits on the curve
+                  const kernelTraces = sampleEvents.map((ti, i) => {
+                    // λ just before this event (excludes this event's own contribution)
+                    let lamBefore = MU
+                    for (let j = 0; j < i; j++) {
+                      lamBefore += ALPHA * Math.exp(-BETA * (ti - sampleEvents[j]))
+                    }
+                    const xs: number[] = []
+                    const ys: (number | null)[] = []
+                    for (const t of tGrid) {
+                      if (t < ti) {
+                        xs.push(t)
+                        ys.push(null)
+                      } else {
+                        xs.push(t)
+                        // This kernel's contribution decaying from the pre-jump baseline
+                        ys.push(lamBefore + ALPHA * Math.exp(-BETA * (t - ti)))
+                      }
+                    }
+                    return {
+                      x: xs,
+                      y: ys,
+                      type: "scatter" as const,
+                      mode: "lines" as const,
+                      line: { color: "rgba(249, 115, 22, 0.18)", width: 0.8 },
+                      connectgaps: false,
+                      showlegend: false,
+                      hoverinfo: "skip" as const,
+                    }
                   })
 
-                  const intT = Array.from({ length: T_MAX }, (_, i) => i)
-                  const intLambda = intT.map(t => {
-                    const mid = t + 0.5
-                    let lam = 0.3
-                    for (const ti of sampleEvents) { if (ti < mid) lam += 0.8 * Math.exp(-1.2 * (mid - ti)) }
-                    return lam
-                  })
-                  const intEvents = intT.map(t =>
-                    sampleEvents.filter(e => e >= t && e < t + 1).length
-                  )
-
+                  // ── DERIVED: heatstrip data ──────────────────────
                   const heatRes = 400
                   const heatT = Array.from({ length: heatRes }, (_, i) => (i / heatRes) * T_MAX)
                   const heatLambda = heatT.map(t => {
-                    let lam = 0.3
-                    for (const ti of sampleEvents) { if (ti < t) lam += 0.8 * Math.exp(-1.2 * (t - ti)) }
+                    let lam = MU
+                    for (const ti of sampleEvents) {
+                      if (ti < t) lam += ALPHA * Math.exp(-BETA * (t - ti))
+                    }
                     return lam
                   })
 
-                  const kernelData = sampleEvents.slice(0, 20).map(ti => ({
-                    x: tGrid,
-                    y: tGrid.map(t => t < ti ? null : 0.8 * Math.exp(-1.2 * (t - ti))),
-                    type: "scatter" as const,
-                    mode: "lines" as const,
-                    line: { color: "rgba(249, 115, 22, 0.22)", width: 1.0 },
-                    connectgaps: false,
-                    showlegend: false,
-                    hoverinfo: "skip" as const,
-                  }))
-
-                  // ── COMPUTED ──────────────────────────────────────
+                  // ── COMPUTED STATS ───────────────────────────────
                   const peak = Math.max(...lambdaGrid)
                   const mean = lambdaGrid.reduce((a, b) => a + b, 0) / lambdaGrid.length
-                  const totalEvents = intEvents.reduce((a, b) => a + b, 0)
+                  const totalEvents = sampleEvents.length
 
                   // ── THEME ────────────────────────────────────────
                   const orange = "#f97316"
@@ -714,85 +758,73 @@ export default function ModelPage() {
 
                   return (
                     <>
-                      {/* ── HEATSTRIP (separate chart, stacked on top) ── */}
+                      {/* ── HEATSTRIP ── */}
                       <PlotlyChart
-                        data={[
-                          {
-                            z: [heatLambda],
-                            x: heatT,
-                            type: "heatmap",
-                            colorscale: [
-                              [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
-                              [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
-                              [0.85, "#fb923c"], [1.0, "#fdba74"],
-                            ],
-                            showscale: false,
-                            zsmooth: "best",
-                            hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
-                          },
-                        ]}
+                        data={[{
+                          z: [heatLambda],
+                          x: heatT,
+                          type: "heatmap" as const,
+                          colorscale: [
+                            [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
+                            [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
+                            [0.85, "#fb923c"], [1.0, "#fdba74"],
+                          ],
+                          showscale: false,
+                          zsmooth: "best",
+                          hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
+                        }]}
                         layout={{
                           autosize: true,
-                          height: 40,
+                          height: 36,
                           paper_bgcolor: "transparent",
                           plot_bgcolor: "transparent",
                           font: font,
                           showlegend: false,
                           margin: { l: 45, r: 20, t: 0, b: 0 },
-                          xaxis: {
-                            showgrid: false,
-                            showticklabels: false,
-                            zeroline: false,
-                            range: [0, T_MAX],
-                          },
-                          yaxis: {
-                            showgrid: false,
-                            showticklabels: false,
-                            zeroline: false,
-                          },
-                          hovermode: "closest",
-                          hoverlabel: {
-                            bgcolor: "#1a1a1a",
-                            bordercolor: orange,
-                            font: { color: "#e5e5e5", family: "monospace", size: 11 },
-                          },
+                          xaxis: { showgrid: false, showticklabels: false, zeroline: false, range: [0, T_MAX] },
+                          yaxis: { showgrid: false, showticklabels: false, zeroline: false },
+                          hovermode: "closest" as const,
+                          hoverlabel: { bgcolor: "#1a1a1a", bordercolor: orange, font: { color: "#e5e5e5", family: "monospace", size: 11 } },
                         }}
                         config={{ displayModeBar: false, responsive: true }}
-                        style={{ width: "100%", height: "40px" }}
+                        style={{ width: "100%", height: "36px" }}
                       />
 
-                      {/* ── MAIN CHART (λ curve + kernels + data points) ── */}
+                      {/* ── MAIN CHART ── */}
                       <PlotlyChart
                         data={[
-                          ...kernelData,
+                          // Kernel traces (behind everything)
+                          ...kernelTraces,
+                          // Smooth λ(t) curve with fill
                           {
                             x: tGrid,
                             y: lambdaGrid,
-                            type: "scatter",
-                            mode: "lines",
-                            fill: "tozeroy",
+                            type: "scatter" as const,
+                            mode: "lines" as const,
+                            fill: "tozeroy" as const,
                             fillcolor: "rgba(249, 115, 22, 0.06)",
                             line: { color: orange, width: 2 },
                             name: "λ(t)",
-                            hoverinfo: "skip",
+                            hoverinfo: "skip" as const,
                           },
+                          // Event arrival scatter points ON the curve
                           {
-                            x: intT,
-                            y: intLambda,
-                            customdata: intT.map((_, i) => [intEvents[i]]),
-                            type: "scatter",
-                            mode: "markers",
+                            x: eventX,
+                            y: eventY,
+                            customdata: eventCounts.map(c => [c]),
+                            type: "scatter" as const,
+                            mode: "markers" as const,
                             marker: {
-                              size: 5,
+                              size: 6,
                               color: orange,
                               symbol: "circle",
-                              line: { width: 1, color: "#171717" },
+                              line: { width: 1.5, color: "#171717" },
                             },
-                            name: "Samples",
+                            name: "Events",
                             hovertemplate:
-                              "<b>t</b> = %{x}" +
+                              "<b>t</b> = %{x:.2f}" +
                               "<br><b>λ</b> = %{y:.3f}" +
-                              "<br><b>events</b> = %{customdata[0]}" +
+                              "<br><b>events in period</b> = %{customdata[0]}" +
                               "<extra></extra>",
                           },
                         ]}
@@ -803,56 +835,42 @@ export default function ModelPage() {
                           plot_bgcolor: "transparent",
                           font: font,
                           showlegend: false,
-                          hovermode: "closest",
-                          hoverlabel: {
-                            bgcolor: "#1a1a1a",
-                            bordercolor: orange,
-                            font: { color: "#e5e5e5", family: "monospace", size: 11 },
-                          },
+                          hovermode: "closest" as const,
+                          hoverlabel: { bgcolor: "#1a1a1a", bordercolor: orange, font: { color: "#e5e5e5", family: "monospace", size: 11 } },
                           margin: { l: 45, r: 20, t: 5, b: 35 },
                           xaxis: {
-                            showgrid: true,
-                            gridcolor: gridColor,
-                            gridwidth: 1,
-                            zeroline: false,
-                            range: [0, T_MAX],
-                            tickfont: font,
+                            showgrid: true, gridcolor: gridColor, gridwidth: 1, zeroline: false,
+                            range: [0, T_MAX], tickfont: font,
                             tickvals: tickVals,
-                            ticktext: tickVals.map(v => `t=${v}`),
+                            ticktext: tickVals.map((v: number) => `t=${v}`),
                           },
                           yaxis: {
-                            showgrid: true,
-                            gridcolor: gridColor,
-                            gridwidth: 1,
-                            zeroline: false,
-                            range: [0, peak * 1.15],
-                            tickfont: font,
+                            showgrid: true, gridcolor: gridColor, gridwidth: 1, zeroline: false,
+                            range: [0, peak * 1.15], tickfont: font,
                             title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
                           },
-                          annotations: [
-                            {
-                              x: 0.005, y: 1.02, xref: "paper", yref: "paper",
-                              text: [
-                                `<span style="color:${orange}"><b>━</b></span> λ(t)`,
-                                `<span style="color:rgba(249,115,22,0.35)"><b>━</b></span> kernels`,
-                                `<span style="color:${orange}"><b>●</b></span> t, λ, events`,
-                                `<b>▓</b> intensity`,
-                              ].join("    "),
-                              showarrow: false,
-                              font: { family: "monospace", size: 10, color: "#525252" },
-                              xanchor: "left",
-                            },
-                          ],
+                          annotations: [{
+                            x: 0.005, y: 1.02, xref: "paper", yref: "paper",
+                            text: [
+                              `<span style="color:${orange}"><b>━</b></span> λ(t)`,
+                              `<span style="color:rgba(249,115,22,0.35)"><b>━</b></span> kernels`,
+                              `<span style="color:${orange}"><b>●</b></span> events`,
+                              `<b>▓</b> intensity`,
+                            ].join("    "),
+                            showarrow: false,
+                            font: { family: "monospace", size: 10, color: "#525252" },
+                            xanchor: "left",
+                          }],
                         }}
                         config={{ displayModeBar: false, responsive: true }}
                         style={{ width: "100%", height: "260px" }}
                       />
 
-                      {/* ── FOOTER STATS ── */}
+                      {/* ── FOOTER ── */}
                       <div className="flex gap-6 mt-2 text-[10px] tracking-wider text-neutral-600 font-mono">
-                        <span>μ = <span className="text-neutral-500">0.3</span></span>
-                        <span>α = <span className="text-neutral-500">0.8</span></span>
-                        <span>β = <span className="text-neutral-500">1.2</span></span>
+                        <span>μ = <span className="text-neutral-500">{MU}</span></span>
+                        <span>α = <span className="text-neutral-500">{ALPHA}</span></span>
+                        <span>β = <span className="text-neutral-500">{BETA}</span></span>
                         <span>Peak: <span className="text-neutral-500">{peak.toFixed(2)}</span></span>
                         <span>Mean: <span className="text-neutral-500">{mean.toFixed(2)}</span></span>
                         <span>Events: <span className="text-neutral-500">{totalEvents}</span></span>
