@@ -712,7 +712,7 @@ export default function ModelPage() {
                     }
                     return {
                       x: xs,
-                      y: ys,
+                      y: eventPeriodCounts,
                       type: "scatter" as const,
                       mode: "lines" as const,
                       line: { color: "rgba(249, 115, 22, 0.20)", width: 0.8 },
