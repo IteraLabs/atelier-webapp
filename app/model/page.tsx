@@ -915,6 +915,100 @@ export default function ModelPage() {
           </div>
         </TabsContent>
 
+        {/* ---- HEATMAP TAB (standalone test) ---- */}
+        <TabsContent value="heatmap">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <Card className="lg:col-span-12 bg-neutral-900 border-neutral-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
+                  INTENSITY HEATMAP — STANDALONE
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const sampleEvents = [1.2, 2.1, 4.5, 4.8, 5.2, 9.3, 10.1, 10.5, 10.8, 11.2, 11.5, 16.4, 17.1, 20.2, 20.5, 20.8]
+                  const MU = 0.3
+                  const ALPHA = 0.8
+                  const BETA = 1.2
+                  const T_MAX = 30
+
+                  const heatRes = 400
+                  const heatX: number[] = []
+                  const heatZ: number[] = []
+                  for (let i = 0; i < heatRes; i++) {
+                    const t = (i / heatRes) * T_MAX
+                    heatX.push(t)
+                    let lam = MU
+                    for (const ti of sampleEvents) {
+                      if (ti < t) lam += ALPHA * Math.exp(-BETA * (t - ti))
+                    }
+                    heatZ.push(lam)
+                  }
+
+                  const orange = "#f97316"
+                  const font = { family: "monospace", color: "#737373", size: 11 }
+
+                  return (
+                    <PlotlyChart
+                      data={[
+                        {
+                          z: [heatZ, heatZ, heatZ, heatZ, heatZ],
+                          x: heatX,
+                          y: [0, 1, 2, 3, 4],
+                          type: "heatmap",
+                          colorscale: [
+                            [0, "#111111"],
+                            [0.1, "#1f1108"],
+                            [0.25, "#3d1f0a"],
+                            [0.4, "#6b3410"],
+                            [0.55, "#b45309"],
+                            [0.7, "#f97316"],
+                            [0.85, "#fb923c"],
+                            [1.0, "#fdba74"],
+                          ],
+                          showscale: false,
+                          zsmooth: "best",
+                          hovertemplate: "t = %{x:.1f}<br>λ = %{z:.2f}<extra></extra>",
+                        },
+                      ]}
+                      layout={{
+                        autosize: true,
+                        height: 120,
+                        paper_bgcolor: "transparent",
+                        plot_bgcolor: "transparent",
+                        font: font,
+                        showlegend: false,
+                        hovermode: "closest",
+                        hoverlabel: {
+                          bgcolor: "#1a1a1a",
+                          bordercolor: orange,
+                          font: { color: "#e5e5e5", family: "monospace", size: 11 },
+                        },
+                        margin: { l: 45, r: 20, t: 10, b: 35 },
+                        xaxis: {
+                          showgrid: false,
+                          zeroline: false,
+                          range: [0, T_MAX],
+                          tickfont: font,
+                          tickvals: [0, 5, 10, 15, 20, 25, 30],
+                          ticktext: ["t=0", "t=5", "t=10", "t=15", "t=20", "t=25", "t=30"],
+                        },
+                        yaxis: {
+                          showgrid: false,
+                          showticklabels: false,
+                          zeroline: false,
+                        },
+                      }}
+                      config={{ displayModeBar: false, responsive: true }}
+                      style={{ width: "100%", height: "120px" }}
+                    />
+                  )
+                })()}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         {/* ---- FORECAST TAB ---- */}
         <TabsContent value="forecast">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
