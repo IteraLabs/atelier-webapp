@@ -750,7 +750,7 @@ export default function ModelPage() {
                         data={[
 
                           {
-                            x: heatT,
+                            x: tGrid,
                             y: [""],
                             z: [heatLambda],
                             type: "heatmap",
