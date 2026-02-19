@@ -449,8 +449,6 @@ export default function ModelPage() {
                     {kpi.value}
                     {kpi.unit && <span className="text-xs text-neutral-500 ml-1">{kpi.unit}</span>}
                   </p>
-                  {kpi.change && (
-                  )}
                 </div>
                 <kpi.icon className={`w-8 h-8 ${kpi.status === "critical" ? "text-red-500/40" : "text-neutral-600"}`} />
               </div>
