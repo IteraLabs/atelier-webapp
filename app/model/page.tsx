@@ -766,6 +766,7 @@ export default function ModelPage() {
                           },
 
                           ...kernelTraces,
+
                           {
                             x: tGrid,
                             y: lambdaGrid,
