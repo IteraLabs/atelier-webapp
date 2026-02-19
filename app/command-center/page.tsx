@@ -175,7 +175,7 @@ export default function CommandCenterPage() {
                   x: ["Jan 28", "Feb 04", "Feb 11", "Feb 14", "Feb 18", "Feb 21", "Feb 25", "Feb 28"],
                   y: [300, 340, 320, 370, 360, 380, 340, 390],
                   type: "scatter",
-                  mode: "lines",
+                  mode: "lines + scatter",
                   line: { color: "#f97316", width: 2 },
                   name: "Active",
                 },
