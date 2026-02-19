@@ -748,34 +748,49 @@ export default function ModelPage() {
                     <>
                       {/* ── HEATSTRIP ── */}
                       <PlotlyChart
-                        data={[{
-                          z: [heatLambda],
-                          x: heatT,
-                          type: "heatmap" as const,
-                          colorscale: [
-                            [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
-                            [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
-                            [0.85, "#fb923c"], [1.0, "#fdba74"],
-                          ],
-                          showscale: false,
-                          zsmooth: "best",
-                          hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
-                        }]}
+                        data={[
+                          {
+                            z: [heatLambda],
+                            x: heatT,
+                            type: "heatmap",
+                            colorscale: [
+                              [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
+                              [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
+                              [0.85, "#fb923c"], [1.0, "#fdba74"],
+                            ],
+                            showscale: false,
+                            zsmooth: "best",
+                            hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
+                          },
+                        ]}
                         layout={{
                           autosize: true,
-                          height: 36,
+                          height: 40,
                           paper_bgcolor: "transparent",
                           plot_bgcolor: "transparent",
                           font: font,
                           showlegend: false,
                           margin: { l: 45, r: 20, t: 0, b: 0 },
-                          xaxis: { showgrid: false, showticklabels: false, zeroline: false, range: [0, T_MAX] },
-                          yaxis: { showgrid: false, showticklabels: false, zeroline: false },
-                          hovermode: "closest" as const,
-                          hoverlabel: { bgcolor: "#1a1a1a", bordercolor: orange, font: { color: "#e5e5e5", family: "monospace", size: 11 } },
+                          xaxis: {
+                            showgrid: false,
+                            showticklabels: false,
+                            zeroline: false,
+                            range: [0, T_MAX],
+                          },
+                          yaxis: {
+                            showgrid: false,
+                            showticklabels: false,
+                            zeroline: false,
+                          },
+                          hovermode: "closest",
+                          hoverlabel: {
+                            bgcolor: "#1a1a1a",
+                            bordercolor: orange,
+                            font: { color: "#e5e5e5", family: "monospace", size: 11 },
+                          },
                         }}
                         config={{ displayModeBar: false, responsive: true }}
-                        style={{ width: "100%", height: "36px" }}
+                        style={{ width: "100%", height: "40px" }}
                       />
 
 
