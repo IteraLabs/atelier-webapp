@@ -741,15 +741,7 @@ export default function ModelPage() {
                     <>
                       <PlotlyChart
                         data={[
-                          // ── TRACE 1: Heatstrip (top panel, on yaxis2) ──
-                          {
-                            x: heatT,
-                            y: [heatLambda],
-                            type: "heatmap" as const,
-                            showscale: false,
-                            xaxis: "x",
-                            yaxis: "y2",
-                          },
+
                           // ── TRACES 2..N: Kernel decays (on yaxis y) ──
                           ...kernelTraces,
                           // ── TRACE: Smooth λ(t) curve (on yaxis y) ──
