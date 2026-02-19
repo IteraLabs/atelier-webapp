@@ -750,9 +750,8 @@ export default function ModelPage() {
                         data={[
                           // ── TRACE 1: Heatstrip (top panel, on yaxis2) ──
                           {
-                            x: heatT,
-                            y: [""],
-                            z: [heatLambda],
+                            x: tGrid,
+                            y: [lambdaGrid],
                             type: "heatmap",
                             colorscale: [
                               [0, "#111111"], [0.1, "#1f1108"], [0.25, "#3d1f0a"],
