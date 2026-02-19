@@ -36,14 +36,3 @@ export default function PlotlyChart({ data, layout, config, className, style }: 
 
   return <div ref={chartRef} className={className} style={style} />
 }
-```
-
----
-
-## Step 3: Edit `app / command - center / page.tsx`
-
-Open `app / command - center / page.tsx`. Make two changes:
-
-**Change A — Add the import at the top of the file**, right below the existing Card imports:
-```
-import PlotlyChart from "@/components/plotly-chart"
