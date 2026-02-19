@@ -665,7 +665,7 @@ export default function ModelPage() {
                   const MU = 0.3
                   const ALPHA = 0.8
                   const BETA = 1.2
-                  const T_MAX = 25
+                  const T_MAX = 30
 
                   // ── DERIVED: λ(t) on fine grid ───────────────────
                   const tGrid: number[] = []
@@ -712,7 +712,7 @@ export default function ModelPage() {
                     }
                     return {
                       x: xs,
-                      y: eventPeriodCounts,
+                      y: ys,
                       type: "scatter" as const,
                       mode: "lines" as const,
                       line: { color: "rgba(249, 115, 22, 0.20)", width: 0.8 },
