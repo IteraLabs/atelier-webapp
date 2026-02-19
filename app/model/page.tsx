@@ -726,7 +726,7 @@ export default function ModelPage() {
                     // Heatstrip (top panel)
                     {
                       x: heatT,
-                      y: ["lambda"],
+                      y: ["λ"],
                       z: [heatLambda],
                       type: "heatmap",
                       colorscale: [
@@ -824,6 +824,7 @@ export default function ModelPage() {
                           },
                           yaxis2: {
                             domain: [0.82, 0.98],
+                            type: "category",
                             showgrid: false,
                             showticklabels: false,
                             zeroline: false,
