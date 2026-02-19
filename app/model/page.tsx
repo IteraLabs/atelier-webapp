@@ -24,6 +24,7 @@ import {
   Info,
   GitCompareArrows,
 } from "lucide-react"
+import PlotlyChart from "@/components/plotly-chart"
 
 // ---------------------------------------------------------------------------
 // Real pipeline data from Rust Hawkes estimation run
