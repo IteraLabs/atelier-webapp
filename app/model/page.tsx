@@ -751,8 +751,7 @@ export default function ModelPage() {
                           // ── TRACE 1: Heatstrip (top panel, on yaxis2) ──
                           {
                             x: heatT,
-                            y: [""],
-                            z: [heatLambda],
+                            y: [heatLambda],
                             type: "scatter",
                             showscale: true,
                             xaxis: "x",
