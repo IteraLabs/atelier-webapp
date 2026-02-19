@@ -19,7 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${geistMono.className} bg-black text-white antialiased`}>{children}</body>
+      <body className={`${geistMono.className} bg-black text-white antialiased`}>{children}
+        <Script
+          src="https://cdn.plot.ly/plotly-basic-2.35.2.min.js"
+          strategy="beforeInteractive"
+        />
+      </body>
     </html>
   )
 }
