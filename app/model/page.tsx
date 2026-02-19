@@ -824,7 +824,6 @@ export default function ModelPage() {
                           },
                           yaxis2: {
                             domain: [0.82, 0.98],
-                            type: "category",
                             showgrid: false,
                             showticklabels: false,
                             zeroline: false,
