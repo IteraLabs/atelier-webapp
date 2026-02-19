@@ -726,7 +726,7 @@ export default function ModelPage() {
                     // Heatstrip (top panel)
                     {
                       x: heatT,
-                      y: ["lambda"],
+                      y: [heatLambda],
                       z: [heatLambda],
                       type: "heatmap",
                       colorscale: [
