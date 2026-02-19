@@ -450,13 +450,6 @@ export default function ModelPage() {
                     {kpi.unit && <span className="text-xs text-neutral-500 ml-1">{kpi.unit}</span>}
                   </p>
                   {kpi.change && (
-                    <span className={`text-xs font-mono ${kpi.status === "critical" ? "text-red-400" : kpi.dir === "up" ? "text-emerald-400" : kpi.dir === "down" ? "text-red-400" : "text-neutral-500"}`}>
-                      {kpi.status !== "critical" && kpi.dir === "up" && <ArrowUpRight className="inline w-3 h-3 mr-0.5" />}
-                      {kpi.status !== "critical" && kpi.dir === "down" && <ArrowDownRight className="inline w-3 h-3 mr-0.5" />}
-                      {kpi.status !== "critical" && kpi.dir === "flat" && <Minus className="inline w-3 h-3 mr-0.5" />}
-                      {kpi.status === "critical" && <XCircle className="inline w-3 h-3 mr-0.5" />}
-                      {kpi.change}
-                    </span>
                   )}
                 </div>
                 <kpi.icon className={`w-8 h-8 ${kpi.status === "critical" ? "text-red-500/40" : "text-neutral-600"}`} />
