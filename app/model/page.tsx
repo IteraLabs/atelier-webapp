@@ -759,7 +759,7 @@ export default function ModelPage() {
                               [0.4, "#6b3410"], [0.55, "#b45309"], [0.7, "#f97316"],
                               [0.85, "#fb923c"], [1.0, "#fdba74"],
                             ],
-                            showscale: false,
+                            showscale: true,
                             hovertemplate: "t = %{x:.1f}   λ = %{z:.2f}<extra></extra>",
                             xaxis: "x",
                             yaxis: "y2",
