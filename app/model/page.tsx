@@ -751,7 +751,7 @@ export default function ModelPage() {
                       fill: "tozeroy",
                       fillcolor: "rgba(249, 115, 22, 0.06)",
                       line: { color: orange, width: 2 },
-                      name: "λ(t)",
+                      name: "lambda(t)",
                       hoverinfo: "skip",
                       xaxis: "x",
                       yaxis: "y",
