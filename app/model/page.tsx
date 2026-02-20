@@ -740,7 +740,6 @@ export default function ModelPage() {
                     <>
                       <PlotlyChart
                         data={[
-
                           // ── TRACES 2..N: Kernel decays (on yaxis y) ──
                           ...kernelTraces,
                           // ── TRACE: Smooth λ(t) curve (on yaxis y) ──
