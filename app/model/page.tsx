@@ -889,10 +889,7 @@ export default function ModelPage() {
                     <p className="text-xs text-orange-400">CV &gt; 1 indicates clustering (super-Poisson), consistent with Hawkes excitation.</p>
                   </div>
                 </div>
-                <div className="pt-3 border-t border-neutral-700">
-                  <p className="text-xs text-neutral-400 mb-2">MINI SPARKLINE</p>
-                  <Sparkline data={intensityTimeSeries} width={240} height={32} />
-                </div>
+
               </CardContent>
             </Card>
 
