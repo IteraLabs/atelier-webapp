@@ -745,7 +745,7 @@ export default function ModelPage() {
                           // ── TRACE: Smooth λ(t) curve (on yaxis y) ──
                           {
                             x: tGrid,
-                            y: lambdaGrid,
+                            y: heatLambda,
                             type: "scatter" as const,
                             mode: "lines" as const,
                             fill: "tozeroy" as const,
