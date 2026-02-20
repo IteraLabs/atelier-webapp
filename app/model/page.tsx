@@ -697,7 +697,7 @@ export default function ModelPage() {
                         ys.push(null)
                       } else {
                         xs.push(t)
-                        ys.push(ALPHA * Math.exp(-BETA * (t - sampleEvents[t])))
+                        ys.push(ALPHA * Math.exp(-BETA * (t - ti)))
                       }
                     }
                     return {
