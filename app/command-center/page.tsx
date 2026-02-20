@@ -1,6 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import PlotlyChart from "@/components/plotly-chart"
 
 export default function CommandCenterPage() {
   return (
@@ -41,13 +42,12 @@ export default function CommandCenterPage() {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-2 h-2 rounded-full ${
-                        agent.status === "active"
-                          ? "bg-white"
-                          : agent.status === "standby"
-                            ? "bg-neutral-500"
-                            : "bg-red-500"
-                      }`}
+                      className={`w-2 h-2 rounded-full ${agent.status === "active"
+                        ? "bg-white"
+                        : agent.status === "standby"
+                          ? "bg-neutral-500"
+                          : "bg-red-500"
+                        }`}
                     ></div>
                     <div>
                       <div className="text-xs text-white font-mono">{agent.id}</div>
@@ -161,7 +161,7 @@ export default function CommandCenterPage() {
           </CardContent>
         </Card>
 
-        {/* Mission Activity Chart */}
+        {/* Mission Activity Chart — Plotly */}
         <Card className="lg:col-span-8 bg-neutral-900 border-neutral-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
@@ -169,45 +169,66 @@ export default function CommandCenterPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-48 relative">
-              {/* Chart Grid */}
-              <div className="absolute inset-0 grid grid-cols-8 grid-rows-6 opacity-20">
-                {Array.from({ length: 48 }).map((_, i) => (
-                  <div key={i} className="border border-neutral-700"></div>
-                ))}
-              </div>
-
-              {/* Chart Line */}
-              <svg className="absolute inset-0 w-full h-full">
-                <polyline
-                  points="0,120 50,100 100,110 150,90 200,95 250,85 300,100 350,80"
-                  fill="none"
-                  stroke="#f97316"
-                  strokeWidth="2"
-                />
-                <polyline
-                  points="0,140 50,135 100,130 150,125 200,130 250,135 300,125 350,120"
-                  fill="none"
-                  stroke="#ffffff"
-                  strokeWidth="2"
-                  strokeDasharray="5,5"
-                />
-              </svg>
-
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-neutral-500 -ml-5 font-mono">
-                <span>500</span>
-                <span>400</span>
-                <span>300</span>
-                <span>200</span>
-              </div>
-
-              {/* X-axis labels */}
-              <div className="absolute bottom-0 left-0 w-full flex justify-between text-xs text-neutral-500 -mb-6 font-mono">
-                <span>Jan 28, 2025</span>
-                <span>Feb 28, 2025</span>
-              </div>
-            </div>
+            <PlotlyChart
+              data={[
+                {
+                  x: ["Jan 28", "Feb 04", "Feb 11", "Feb 14", "Feb 18", "Feb 21", "Feb 25", "Feb 28"],
+                  y: [300, 340, 320, 370, 360, 380, 340, 390],
+                  type: "scatter",
+                  mode: "lines + scatter",
+                  line: { color: "#f97316", width: 2 },
+                  name: "Active",
+                },
+                {
+                  x: ["Jan 28", "Feb 04", "Feb 11", "Feb 14", "Feb 18", "Feb 21", "Feb 25", "Feb 28"],
+                  y: [260, 270, 280, 290, 280, 270, 290, 300],
+                  type: "scatter",
+                  mode: "lines",
+                  line: { color: "#ffffff", width: 2, dash: "dash" },
+                  name: "Passive",
+                },
+              ]}
+              layout={{
+                autosize: true,
+                height: 192,
+                margin: { l: 35, r: 10, t: 5, b: 30 },
+                paper_bgcolor: "transparent",
+                plot_bgcolor: "transparent",
+                font: {
+                  family: "monospace",
+                  color: "#737373",
+                  size: 11,
+                },
+                xaxis: {
+                  showgrid: true,
+                  gridcolor: "rgba(64, 64, 64, 0.2)",
+                  gridwidth: 1,
+                  zeroline: false,
+                  tickfont: { family: "monospace", size: 11, color: "#737373" },
+                },
+                yaxis: {
+                  showgrid: true,
+                  gridcolor: "rgba(64, 64, 64, 0.2)",
+                  gridwidth: 1,
+                  zeroline: false,
+                  range: [200, 500],
+                  dtick: 100,
+                  tickfont: { family: "monospace", size: 11, color: "#737373" },
+                },
+                showlegend: false,
+                hovermode: "x unified",
+                hoverlabel: {
+                  bgcolor: "#262626",
+                  bordercolor: "#f97316",
+                  font: { color: "#ffffff", family: "monospace", size: 11 },
+                },
+              }}
+              config={{
+                displayModeBar: false,
+                responsive: true,
+              }}
+              style={{ width: "100%", height: "192px" }}
+            />
           </CardContent>
         </Card>
 
