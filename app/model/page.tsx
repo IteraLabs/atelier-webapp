@@ -653,11 +653,11 @@ export default function ModelPage() {
               <CardContent>
                 {(() => {
                   // ── DATA VARIABLES ─────────────────────────────────
-                  const sampleEvents = intensityTimeSeries
+                  const sampleEvents = [1.2, 2.1, 4.5, 4.8, 5.2, 9.3, 10.1, 10.5, 10.8, 11.2, 11.5, 16.4, 17.1, 20.2, 20.5, 20.8]
                   const MU = 0.3
                   const ALPHA = 0.8
                   const BETA = 1.2
-                  const T_MAX = 16
+                  const T_MAX = 18
 
                   // ── DERIVED: λ(t) on fine grid ───────────────────
                   const tGrid: number[] = []
