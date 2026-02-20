@@ -657,7 +657,7 @@ export default function ModelPage() {
                   const MU = 0.3
                   const ALPHA = 0.8
                   const BETA = 1.2
-                  const T_MAX = 30
+                  const T_MAX = 16
 
                   // ── DERIVED: λ(t) on fine grid ───────────────────
                   const tGrid: number[] = []
