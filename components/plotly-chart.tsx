@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useEffect } from "react"
+import Plotly from "plotly.js-basic-dist-min"
 
 interface PlotlyChartProps {
   data: any[]
@@ -14,8 +15,7 @@ export default function PlotlyChart({ data, layout, config, className, style }: 
   const chartRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const Plotly = (window as any).Plotly
-    if (!Plotly || !chartRef.current) return
+    if (!chartRef.current) return
 
     Plotly.newPlot(chartRef.current, data, layout, config)
 
