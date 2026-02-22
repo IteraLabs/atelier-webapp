@@ -3,13 +3,13 @@ import type { Metadata } from "next"
 import { Geist_Mono as GeistMono } from "next/font/google"
 import "./globals.css"
 import Script from "next/script"
+import { Providers } from "./providers"
 
 const geistMono = GeistMono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Tactical Operations Dashboard",
-  description: "Tactical command and control system",
-  generator: 'v0.app'
+  title: "Atelier | IteraLabs",
+  description: "Quantitative research platform for market microstructure analysis",
 }
 
 export default function RootLayout({
@@ -18,8 +18,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es">
-      <body className={`${geistMono.className} bg-black text-white antialiased`}>{children}
+    <html lang="en">
+      <body className={`${geistMono.className} bg-black text-white antialiased`}>
+        <Providers>{children}</Providers>
         <Script
           src="https://cdn.plot.ly/plotly-basic-2.35.2.min.js"
           strategy="beforeInteractive"

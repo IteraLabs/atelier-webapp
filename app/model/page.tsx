@@ -15,9 +15,6 @@ import {
   Download,
   Clock,
   Zap,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
   AlertTriangle,
   XCircle,
   CheckCircle2,
@@ -25,308 +22,17 @@ import {
   GitCompareArrows,
 } from "lucide-react"
 import PlotlyChart from "@/components/plotly-chart"
-
-// ---------------------------------------------------------------------------
-// Real pipeline data from Rust Hawkes estimation run
-// ---------------------------------------------------------------------------
-
-// Intensity time-series (simulated step-function sampled from fitted intensity)
-const intensityTimeSeries = [
-  0.42, 0.45, 0.71, 1.12, 1.58, 1.34, 0.98, 0.87, 0.76, 0.64,
-  0.58, 0.52, 0.68, 1.24, 1.89, 2.14, 1.72, 1.31, 1.08, 0.91,
-  0.79, 0.65, 0.54, 0.48, 0.72, 1.45, 1.92, 1.68, 1.22, 0.95,
-  0.82, 0.71, 0.63, 0.57, 0.51, 0.88, 1.56, 2.31, 1.94, 1.42,
-]
-
-const forecastSeries = [
-  1.42, 1.28, 1.15, 1.04, 0.95, 0.88, 0.82, 0.77, 0.73, 0.70,
-  0.68, 0.66, 0.64, 0.63, 0.62, 0.61, 0.60, 0.60, 0.59, 0.59,
-]
-
-// BTC/USDT order book event stream (dummy)
-const eventTimestamps = [
-  { time: "10:51:34.857", type: "buy", price: 51234.50, size: 0.120, intensity: 0.42 },
-  { time: "10:51:35.069", type: "sell", price: 51234.25, size: 0.085, intensity: 0.45 },
-  { time: "10:51:35.504", type: "buy", price: 51234.75, size: 0.200, intensity: 0.71 },
-  { time: "10:51:35.625", type: "buy", price: 51235.00, size: 0.340, intensity: 1.12 },
-  { time: "10:51:35.747", type: "sell", price: 51234.50, size: 0.150, intensity: 1.58 },
-  { time: "10:51:36.180", type: "buy", price: 51234.75, size: 0.095, intensity: 1.34 },
-  { time: "10:51:36.823", type: "sell", price: 51234.25, size: 0.180, intensity: 0.98 },
-  { time: "10:51:37.505", type: "buy", price: 51234.50, size: 0.110, intensity: 0.87 },
-  { time: "10:51:38.069", type: "sell", price: 51234.00, size: 0.260, intensity: 0.76 },
-  { time: "10:51:38.736", type: "buy", price: 51234.25, size: 0.075, intensity: 0.64 },
-]
-
-// Branching matrix (buy/sell/cancel self/cross-excitation)
-const branchingMatrix = [
-  [0.27, 0.15, 0.04],
-  [0.18, 0.31, 0.09],
-  [0.06, 0.11, 0.22],
-]
-
-// Forecast vs Actual comparison (from pipeline Section 9)
-const forecastVsActual = [
-  { i: 1, actualDt: 1.0, forecastDt: 1211.28, diff: -1210.28 },
-  { i: 2, actualDt: 4.0, forecastDt: 1480.61, diff: -1476.61 },
-  { i: 3, actualDt: 5.0, forecastDt: 1619.54, diff: -1614.54 },
-  { i: 4, actualDt: 6.0, forecastDt: 1722.20, diff: -1716.20 },
-  { i: 5, actualDt: 7.0, forecastDt: 2424.84, diff: -2417.84 },
-  { i: 6, actualDt: 8.0, forecastDt: 2934.18, diff: -2926.18 },
-  { i: 7, actualDt: 9.0, forecastDt: 4271.47, diff: -4262.47 },
-  { i: 8, actualDt: 11.0, forecastDt: 4709.46, diff: -4698.46 },
-  { i: 9, actualDt: 12.0, forecastDt: 5012.15, diff: -5000.15 },
-  { i: 10, actualDt: 21.0, forecastDt: 5215.13, diff: -5194.13 },
-  { i: 11, actualDt: 22.0, forecastDt: 5280.02, diff: -5258.02 },
-  { i: 12, actualDt: 54.0, forecastDt: 5558.15, diff: -5504.15 },
-  { i: 13, actualDt: 62.0, forecastDt: 6319.73, diff: -6257.73 },
-  { i: 14, actualDt: 150.0, forecastDt: 7069.78, diff: -6919.78 },
-  { i: 15, actualDt: 214.0, forecastDt: 8344.19, diff: -8130.19 },
-  { i: 16, actualDt: 220.0, forecastDt: 8619.67, diff: -8399.67 },
-  { i: 17, actualDt: 221.0, forecastDt: 8732.21, diff: -8511.21 },
-  { i: 18, actualDt: 223.0, forecastDt: 9414.92, diff: -9191.92 },
-  { i: 19, actualDt: 399.0, forecastDt: 9433.92, diff: -9034.92 },
-  { i: 20, actualDt: 2145.0, forecastDt: 9724.63, diff: -7579.63 },
-]
-
-// Diagnostics from pipeline
-const diagnosticMetrics = [
-  { label: "Log-Likelihood", value: "-58,589.63" },
-  { label: "AIC", value: "117,185.26" },
-  { label: "BIC", value: "117,207.24" },
-  { label: "Residuals Mean", value: "1.000076" },
-  { label: "Residuals Std Dev", value: "1.075846" },
-  { label: "Compensator Ratio", value: "1.0001" },
-]
-
-// --- Failure event log -------------------------------------------------------
-
-type FailureSeverity = "critical" | "warning" | "info"
-
-interface FailureEvent {
-  id: string
-  timestamp: string
-  type: string
-  severity: FailureSeverity
-  message: string
-  detail: string
-  resolved: boolean
-}
-
-const failureEvents: FailureEvent[] = [
-  {
-    id: "F-001",
-    timestamp: "2026-02-18 10:52:11",
-    type: "Forecast Accuracy",
-    severity: "critical",
-    message: "Hawkes forecast MAE = 5,265.20ms vs actual mean gap 189.70ms (27.8x overshoot)",
-    detail: "All 20 test-set forecasts overestimate inter-arrival times by orders of magnitude. Mean forecast gap = 5,454.90ms vs mean actual = 189.70ms. Hawkes MAE is 153.7% worse than Poisson baseline.",
-    resolved: false,
-  },
-  {
-    id: "F-002",
-    timestamp: "2026-02-18 10:51:58",
-    type: "Model Comparison",
-    severity: "warning",
-    message: "Poisson baseline outperforms Hawkes on out-of-sample forecasting",
-    detail: "Poisson MAE = 2,075.66ms, RMSE = 2,324.63ms vs Hawkes MAE = 5,265.20ms, RMSE = 5,888.47ms. Despite Hawkes winning on in-sample fit (AIC lower by 25,531), it fails on forward prediction.",
-    resolved: false,
-  },
-  {
-    id: "F-003",
-    timestamp: "2026-02-18 10:51:34",
-    type: "Data Gap",
-    severity: "warning",
-    message: "Large timestamp gaps detected in trade arrivals",
-    detail: "2 gaps exceeding 5.0s threshold: index 337 (5,249ms), index 3715 (5,047ms). May affect intensity estimation near gap boundaries.",
-    resolved: false,
-  },
-  {
-    id: "F-004",
-    timestamp: "2026-02-18 10:51:34",
-    type: "Data Quality",
-    severity: "info",
-    message: "8,857 duplicate timestamps removed from 20,102 raw trades",
-    detail: "Source: bybit/btcusdt/trades_bybit_20260218_105134.846.parquet. Duplicates removed before inter-arrival computation. 11,245 unique arrivals retained.",
-    resolved: true,
-  },
-  {
-    id: "F-005",
-    timestamp: "2026-02-17 16:42:10",
-    type: "MLE Convergence",
-    severity: "critical",
-    message: "Previous run: MLE failed after 100,000 iterations (gradient norm 3.183e+0)",
-    detail: "Resolved by adjusting heuristic initialization. Current run converged in 20,994 iterations.",
-    resolved: true,
-  },
-]
-
-// --- SVG helper components ---------------------------------------------------
-
-function Sparkline({
-  data,
-  width = 320,
-  height = 48,
-  color = "#f97316",
-  fillOpacity = 0.15,
-}: {
-  data: number[]
-  width?: number
-  height?: number
-  color?: string
-  fillOpacity?: number
-}) {
-  const max = Math.max(...data)
-  const min = Math.min(...data)
-  const range = max - min || 1
-  const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * width
-      const y = height - ((v - min) / range) * (height - 4) - 2
-      return `${x},${y}`
-    })
-    .join(" ")
-  const areaPoints = `0,${height} ${points} ${width},${height}`
-
-  return (
-    <svg width={width} height={height} className="overflow-visible">
-      <polygon points={areaPoints} fill={color} opacity={fillOpacity} />
-      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" />
-    </svg>
-  )
-}
-
-function StepChart({
-  data,
-  width = 600,
-  height = 140,
-  color = "#f97316",
-}: {
-  data: number[]
-  width?: number
-  height?: number
-  color?: string
-}) {
-  const max = Math.max(...data) * 1.1
-  const range = max || 1
-  const stepW = width / data.length
-
-  const pathParts: string[] = []
-  data.forEach((v, i) => {
-    const x = i * stepW
-    const y = height - (v / range) * (height - 8) - 4
-    if (i === 0) pathParts.push(`M ${x},${y}`)
-    else pathParts.push(`H ${x} V ${y}`)
-  })
-  pathParts.push(`H ${width}`)
-  const areaPath = pathParts.join(" ") + ` V ${height} H 0 Z`
-
-  const gridLines = [0.25, 0.5, 0.75, 1.0].map((f) => {
-    const y = height - f * (height - 8) - 4
-    return { y, label: (f * range).toFixed(1) }
-  })
-
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="none">
-      {gridLines.map((g, i) => (
-        <line key={i} x1={0} y1={g.y} x2={width} y2={g.y} stroke="#404040" strokeWidth="0.5" strokeDasharray="4 4" />
-      ))}
-      <path d={areaPath} fill={color} opacity={0.12} />
-      <path d={pathParts.join(" ")} fill="none" stroke={color} strokeWidth="1.5" />
-    </svg>
-  )
-}
-
-function ForecastChart({
-  history,
-  forecast,
-  showFailureBand = false,
-}: {
-  history: number[]
-  forecast: number[]
-  showFailureBand?: boolean
-}) {
-  const all = [...history.slice(-20), ...forecast]
-  const max = Math.max(...all) * 1.15
-  const width = 600
-  const height = 140
-  const total = history.slice(-20).length + forecast.length
-  const stepW = width / total
-  const toY = (v: number) => height - (v / max) * (height - 8) - 4
-
-  const histSlice = history.slice(-20)
-  let histPath = ""
-  histSlice.forEach((v, i) => {
-    const x = i * stepW
-    const y = toY(v)
-    histPath += i === 0 ? `M ${x},${y}` : ` H ${x} V ${y}`
-  })
-
-  const fStart = histSlice.length
-  let fcPath = `M ${(fStart - 1) * stepW},${toY(histSlice[histSlice.length - 1])}`
-  forecast.forEach((v, i) => {
-    const x = (fStart + i) * stepW
-    fcPath += ` H ${x} V ${toY(v)}`
-  })
-  fcPath += ` H ${width}`
-
-  const upperBand = forecast.map((v) => v * 1.35)
-  const lowerBand = forecast.map((v) => v * 0.7)
-
-  let bandPath = `M ${(fStart - 1) * stepW},${toY(upperBand[0] || forecast[0])}`
-  upperBand.forEach((v, i) => {
-    bandPath += ` L ${(fStart + i) * stepW},${toY(v)}`
-  })
-  bandPath += ` L ${width},${toY(upperBand[upperBand.length - 1])}`
-  lowerBand.slice().reverse().forEach((v, i) => {
-    bandPath += ` L ${(fStart + lowerBand.length - 1 - i) * stepW},${toY(v)}`
-  })
-  bandPath += " Z"
-
-  const divX = fStart * stepW
-
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full" preserveAspectRatio="none">
-      {[0.25, 0.5, 0.75].map((f, i) => (
-        <line key={i} x1={0} y1={height - f * (height - 8) - 4} x2={width} y2={height - f * (height - 8) - 4} stroke="#404040" strokeWidth="0.5" strokeDasharray="4 4" />
-      ))}
-      <line x1={divX} y1={0} x2={divX} y2={height} stroke="#525252" strokeWidth="1" strokeDasharray="4 2" />
-      <path d={bandPath} fill={showFailureBand ? "#ef4444" : "#f97316"} opacity={showFailureBand ? 0.12 : 0.08} />
-      <path d={histPath} fill="none" stroke="#ffffff" strokeWidth="1.5" />
-      <path d={fcPath} fill="none" stroke={showFailureBand ? "#ef4444" : "#f97316"} strokeWidth="1.5" strokeDasharray="6 3" />
-      {showFailureBand && (
-        <>
-          <line x1={divX} y1={0} x2={divX} y2={height} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
-          <text x={divX + 6} y={14} fill="#ef4444" fontSize="10" fontFamily="monospace">DEGRADED</text>
-        </>
-      )}
-    </svg>
-  )
-}
-
-function FailureTimeline({ events }: { events: FailureEvent[] }) {
-  const width = 600
-  const height = 60
-  const total = events.length
-  const colW = width / Math.max(total, 1)
-  const severityColor: Record<FailureSeverity, string> = { critical: "#ef4444", warning: "#f97316", info: "#3b82f6" }
-
-  return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="xMidYMid meet">
-      <line x1={0} y1={height / 2} x2={width} y2={height / 2} stroke="#404040" strokeWidth="0.5" />
-      {events.map((e, i) => {
-        const x = i * colW + colW / 2
-        const c = severityColor[e.severity]
-        return (
-          <g key={e.id}>
-            <circle cx={x} cy={height / 2} r={e.severity === "critical" ? 6 : 4} fill={c} opacity={e.resolved ? 0.35 : 0.9} />
-            {e.resolved && <line x1={x - 3} y1={height / 2 - 3} x2={x + 3} y2={height / 2 + 3} stroke="#a3a3a3" strokeWidth="1.5" />}
-            <text x={x} y={height / 2 + 18} textAnchor="middle" fill="#737373" fontSize="7" fontFamily="monospace">{e.id}</text>
-          </g>
-        )
-      })}
-    </svg>
-  )
-}
+import { Sparkline, ForecastChart, FailureTimeline } from "@/components/charts"
+import type { FailureSeverity, ModelStatus } from "@/types/model"
+import {
+  intensityTimeSeries,
+  forecastSeries,
+  eventTimestamps,
+  branchingMatrix,
+  forecastVsActual,
+  diagnosticMetrics,
+  failureEvents,
+} from "@/lib/mock/model-data"
 
 // ===========================================================================
 // Main page component
@@ -337,7 +43,7 @@ export default function ModelPage() {
   const [alpha, setAlpha] = useState("9.425e-4")
   const [beta, setBeta] = useState("4.712e-3")
   const [horizon, setHorizon] = useState("20")
-  const [modelStatus, setModelStatus] = useState<"idle" | "running" | "fitted" | "failed">("fitted")
+  const [modelStatus, setModelStatus] = useState<ModelStatus>("fitted")
 
   const handleFit = () => {
     setModelStatus("running")
@@ -740,9 +446,7 @@ export default function ModelPage() {
                     <>
                       <PlotlyChart
                         data={[
-                          // ── TRACES 2..N: Kernel decays (on yaxis y) ──
                           ...kernelTraces,
-                          // ── TRACE: Smooth λ(t) curve (on yaxis y) ──
                           {
                             x: tGrid,
                             y: heatLambda,
@@ -756,7 +460,6 @@ export default function ModelPage() {
                             xaxis: "x",
                             yaxis: "y",
                           },
-                          // ── TRACE: Event scatter points (on yaxis y) ──
                           {
                             x: eventX,
                             y: eventY,
@@ -793,8 +496,6 @@ export default function ModelPage() {
                             font: { color: "#e5e5e5", family: "monospace", size: 11 },
                           },
                           margin: { l: 45, r: 20, t: 8, b: 35 },
-
-                          // ── SHARED X-AXIS ──
                           xaxis: {
                             showgrid: true,
                             gridcolor: gridColor,
@@ -807,16 +508,12 @@ export default function ModelPage() {
                             domain: [0, 1],
                             anchor: "y",
                           },
-
-                          // ── HEATSTRIP PANEL (top 20%) ──
                           yaxis2: {
                             showgrid: true,
                             showticklabels: true,
                             zeroline: false,
                             title: { text: "top", font: { ...font, size: 10, color: "#525252" } },
                           },
-
-                          // ── MAIN PANEL (bottom 72%) ──
                           yaxis: {
                             showgrid: true,
                             gridcolor: gridColor,
@@ -827,7 +524,6 @@ export default function ModelPage() {
                             title: { text: "λ(t)", font: { ...font, size: 10, color: "#525252" }, standoff: 8 },
                             domain: [0, 0.72],
                           },
-
                           annotations: [{
                             x: 0.005,
                             y: 0.78,
@@ -919,7 +615,6 @@ export default function ModelPage() {
                     </div>
                   </div>
                 )}
-                {/* Forecast vs Actual table */}
                 <div className="overflow-x-auto max-h-80">
                   <table className="w-full text-xs">
                     <thead className="sticky top-0 bg-neutral-900">
@@ -1008,7 +703,6 @@ export default function ModelPage() {
         {/* ---- HAWKES vs POISSON TAB ---- */}
         <TabsContent value="comparison">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Model comparison table */}
             <Card className="lg:col-span-8 bg-neutral-900 border-neutral-700">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -1017,7 +711,6 @@ export default function ModelPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* In-sample comparison */}
                 <div>
                   <p className="text-xs text-neutral-400 tracking-wider mb-3">IN-SAMPLE FIT</p>
                   <div className="overflow-x-auto">
@@ -1054,7 +747,6 @@ export default function ModelPage() {
                   </div>
                 </div>
 
-                {/* Likelihood Ratio Test */}
                 <div className="pt-3 border-t border-neutral-700">
                   <p className="text-xs text-neutral-400 tracking-wider mb-3">LIKELIHOOD RATIO TEST</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -1077,7 +769,6 @@ export default function ModelPage() {
                   </div>
                 </div>
 
-                {/* Out-of-sample forecast comparison */}
                 <div className="pt-3 border-t border-neutral-700">
                   <p className="text-xs text-neutral-400 tracking-wider mb-3">OUT-OF-SAMPLE FORECAST (20 steps)</p>
                   <div className="overflow-x-auto">
@@ -1130,7 +821,6 @@ export default function ModelPage() {
               </CardContent>
             </Card>
 
-            {/* Side panel: Poisson baseline details */}
             <Card className="lg:col-span-4 bg-neutral-900 border-neutral-700">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">POISSON BASELINE</CardTitle>
