@@ -9,7 +9,7 @@ const geistMono = GeistMono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Atelier | IteraLabs",
-  description: "Quantitative research platform for market microstructure analysis",
+  description: "Quantitative research platform for defi & market microstructure analysis",
 }
 
 export default function RootLayout({
